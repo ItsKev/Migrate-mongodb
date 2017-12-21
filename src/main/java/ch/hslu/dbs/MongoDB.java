@@ -40,20 +40,27 @@ public class MongoDB {
         }
     }
 
-    private static void migrateExams(MongoCollection<Document> studenten, MongoCollection<Document> professoren, MongoCollection<Document> vorlesungen, MongoCollection<Document> pruefung, Statement statement) throws SQLException {
+    private static void migrateExams(MongoCollection<Document> studenten,
+                                     MongoCollection<Document> professoren,
+                                     MongoCollection<Document> vorlesungen,
+                                     MongoCollection<Document> pruefung, Statement statement) throws SQLException {
         ResultSet resultSet;
         resultSet = statement
                 .executeQuery("SELECT * FROM pruefen");
         while (resultSet.next()) {
-            Document document = new Document("PersNr", professoren.find(Filters.eq("PersNr", resultSet.getInt("PersNr"))).first());
-            document.append("MatrNr", studenten.find(Filters.eq("MatrNr", resultSet.getInt("MatrNr"))).first());
-            document.append("VorlNr", vorlesungen.find(Filters.eq("VorlNr", resultSet.getInt("VorlNr"))).first());
+            Document document = new Document("PersNr", professoren.find(Filters.eq("PersNr",
+                    resultSet.getInt("PersNr"))).first());
+            document.append("MatrNr", studenten.find(Filters.eq("MatrNr",
+                    resultSet.getInt("MatrNr"))).first());
+            document.append("VorlNr", vorlesungen.find(Filters.eq("VorlNr",
+                    resultSet.getInt("VorlNr"))).first());
             document.append("Note", resultSet.getFloat("Note"));
             pruefung.insertOne(document);
         }
     }
 
-    private static void migrateStudents(MongoCollection<Document> studenten, MongoCollection<Document> vorlesungen, Statement statement) throws SQLException {
+    private static void migrateStudents(MongoCollection<Document> studenten,
+                                        MongoCollection<Document> vorlesungen, Statement statement) throws SQLException {
         ResultSet resultSet;
         resultSet = statement
                 .executeQuery("SELECT studenten.MatrNr, studenten.Name, studenten.Semester FROM studenten");
